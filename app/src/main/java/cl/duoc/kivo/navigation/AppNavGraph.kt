@@ -13,30 +13,30 @@ import cl.duoc.kivo.ui.splash.SplashScreen
 fun AppNavGraph() {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Screen.Splash.route) {
-        composable(Screen.Splash.route) {
-            SplashScreen(navController)
-        }
+        composable(Screen.Splash.route) { SplashScreen(navController) }
         composable(Screen.Login.route) {
             LoginScreen(
                 onLoginSuccess = { navController.navigate(Screen.Home.route) { popUpTo(Screen.Login.route) { inclusive = true } } },
-                onRegister = { navController.navigate(Screen.Register.route) }
+                onRegisterClick = { navController.navigate(Screen.Register.route) }
             )
         }
         composable(Screen.Register.route) {
             RegisterScreen(
-                onRegistered = { navController.navigate(Screen.Login.route) { popUpTo(Screen.Register.route) { inclusive = true } } },
-                onBack = { navController.navigateUp() }
+                onRegisterSuccess = { navController.navigate(Screen.Login.route) { popUpTo(Screen.Register.route) { inclusive = true } } },
+                onBackClick = { navController.navigateUp() }
             )
         }
         composable(Screen.Home.route) {
             HomeScreen(
+                onOpenLessons = { navController.navigate(Screen.Lessons.route) },
                 onOpenProfile = { navController.navigate(Screen.Profile.route) },
                 onOpenReviews = { navController.navigate(Screen.Reviews.route) },
                 onOpenFavorites = { navController.navigate(Screen.Favorites.route) }
             )
         }
+        composable(Screen.Lessons.route) { LessonsScreen(onBack = { navController.navigateUp() }) }
         composable(Screen.Profile.route) { ProfileScreen(onBack = { navController.navigateUp() }) }
-        composable(Screen.Reviews.route) { ReviewsScreen() }
-        composable(Screen.Favorites.route) { FavoritesScreen() }
+        composable(Screen.Reviews.route) { ReviewsScreen(onBack = { navController.navigateUp() }) }
+        composable(Screen.Favorites.route) { FavoritesScreen(onBack = { navController.navigateUp() }) }
     }
 }

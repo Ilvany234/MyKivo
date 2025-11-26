@@ -2,55 +2,27 @@ package cl.duoc.kivo.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import cl.duoc.kivo.data.AuthRepository
+import cl.duoc.kivo.data.local.entities.UserEntity
+import cl.duoc.kivo.data.repository.KivoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-/**
- * ViewModel de autenticación.
- * Maneja:
- * - login
- * - registro
- * - estados (loading, success, error)
- */
 @HiltViewModel
-class AuthViewModel @Inject constructor(
-    private val repository: AuthRepository
-) : ViewModel() {
-
-    private val _state = MutableStateFlow<AuthState>(AuthState.Idle)
-    val state: StateFlow<AuthState> = _state
-
-    fun login(email: String, password: String) {
+class AuthViewModel @Inject constructor(private val repo: KivoRepository) : ViewModel() {
+    fun register(name: String, email: String, password: String, age: Int, onSuccess: () -> Unit, onError: (String) -> Unit) {
         viewModelScope.launch {
-            _state.value = AuthState.Loading
-
-            val result = repository.login(email, password)
-
-            _state.value = result.fold(
-                onSuccess = { AuthState.Success("Inicio de sesión correcto") },
-                onFailure = { AuthState.Error(it.message ?: "Error desconocido") }
-            )
+            try {
+                repo.registerLocalUser(UserEntity(email = email, name = name, password = password, age = age))
+                onSuccess()
+            } catch (e: Exception) { onError(e.message ?: "Error") }
         }
     }
 
-    fun register(name: String, email: String, password: String, age: Int) {
+    fun login(email: String, password: String, onSuccess: () -> Unit, onError: (String) -> Unit) {
         viewModelScope.launch {
-            _state.value = AuthState.Loading
-
-            val result = repository.register(name, email, password, age)
-
-            _state.value = result.fold(
-                onSuccess = { AuthState.Success("Registro exitoso") },
-                onFailure = { AuthState.Error(it.message ?: "Error desconocido") }
-            )
+            val user = repo.getLocalUser(email)
+            if (user != null && user.password == password) onSuccess() else onError("Credenciales inválidas")
         }
-    }
-
-    fun resetState() {
-        _state.value = AuthState.Idle
     }
 }

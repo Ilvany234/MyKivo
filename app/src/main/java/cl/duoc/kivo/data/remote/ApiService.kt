@@ -1,16 +1,22 @@
 package cl.duoc.kivo.data.remote
 
+import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Path
 
-interface ApiService {
+data class UserDto(val name: String, val email: String, val age: Int)
+data class ReviewDto(val authorEmail: String, val text: String)
+data class FavoriteDto(val word: String, val description: String)
 
-    @GET("reviews")
-    suspend fun getReviews(): List<ReviewDto>
+interface ApiService {
+    @GET("users/{email}")
+    suspend fun getUser(@Path("email") email: String): Response<UserDto>
+
+    @POST("reviews")
+    suspend fun postReview(@Body review: ReviewDto): Response<Void>
 
     @GET("favorites")
-    suspend fun getFavorites(): List<FavoriteDto>
+    suspend fun getFavorites(): Response<List<FavoriteDto>>
 }
-
-data class ReviewDto(val id: Long, val authorEmail: String, val text: String, val timestamp: Long)
-data class FavoriteDto(val id: Long, val word: String, val description: String)

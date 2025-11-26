@@ -1,52 +1,29 @@
 package cl.duoc.kivo.ui.screens
 
-import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-
-data class Section(val level: String, val lesson: String, val imageName: String)
+import cl.duoc.kivo.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(onOpenProfile: () -> Unit, onOpenReviews: () -> Unit, onOpenFavorites: () -> Unit) {
-    val context = LocalContext.current
-    val sections = remember {
-        listOf(
-            Section("Principiante", "Lección 1", "img_intro"),
-            Section("Inicial", "Lección 2", "img_saludos"),
-            Section("Intermedio", "Lección 3", "img_vocab"),
-            Section("Avanzado", "Lección 4", "img_frases"),
-            Section("Master", "Lección 5", "img_conv")
-        )
-    }
-
-    val takePictureLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap ->
-        if (bitmap != null) Toast.makeText(context, "Muy buen trabajo!", Toast.LENGTH_LONG).show()
-    }
-
-    Scaffold(topBar = { TopAppBar(title = { Text("Kivo") }, backgroundColor = MaterialTheme.colors.secondary) }) { padding ->
-        LazyColumn(contentPadding = padding, modifier = Modifier.fillMaxSize()) {
-            items(sections) { s ->
-                Card(modifier = Modifier.fillMaxWidth().padding(12.dp), elevation = 4.dp) {
-                    Column(modifier = Modifier.padding(12.dp)) {
-                        Text(s.level)
-                        Text(s.lesson)
-                        Spacer(Modifier.height(6.dp))
-                        Box(modifier = Modifier.height(160.dp).fillMaxWidth(), contentAlignment = Alignment.Center) { Text("Imagen: ${s.imageName}") }
-                        Spacer(Modifier.height(8.dp))
-                        Button(onClick = { takePictureLauncher.launch(null) }) { Text("Abrir cámara") }
-                    }
-                }
-            }
+fun HomeScreen(onOpenLessons: () -> Unit, onOpenProfile: () -> Unit, onOpenReviews: () -> Unit, onOpenFavorites: () -> Unit) {
+    Column(modifier = Modifier.fillMaxSize().background(Color(0xFFFFF3E0)).verticalScroll(rememberScrollState()).padding(16.dp)) {
+        CenterAlignedTopAppBar(title = { Text("Kivo", color = Color.White) }, navigationIcon = { IconButton(onClick = {}) { Icon(painterResource(id = R.drawable.ic_home), contentDescription = "menu") } }, colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = MaterialTheme.colorScheme.primary))
+        Spacer(Modifier.height(24.dp))
+        Button(onClick = onOpenLessons, modifier = Modifier.fillMaxWidth().height(52.dp), colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)) { Text("Ver Lecciones", color = MaterialTheme.colorScheme.onSecondary) }
+        Spacer(Modifier.height(16.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+            Button(onClick = onOpenProfile, modifier = Modifier.weight(1f), colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)) { Text("Perfil", color = MaterialTheme.colorScheme.onSecondary) }
+            Button(onClick = onOpenReviews, modifier = Modifier.weight(1f), colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)) { Text("Reseñas", color = MaterialTheme.colorScheme.onSecondary) }
+            Button(onClick = onOpenFavorites, modifier = Modifier.weight(1f), colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)) { Text("Favoritos", color = MaterialTheme.colorScheme.onSecondary) }
         }
     }
 }
