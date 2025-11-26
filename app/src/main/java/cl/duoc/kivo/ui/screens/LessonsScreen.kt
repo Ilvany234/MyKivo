@@ -1,108 +1,82 @@
 package cl.duoc.kivo.ui.screens
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.res.painterResource
-import cl.duoc.kivo.data.lessonsList
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import cl.duoc.kivo.data.Lesson
+import cl.duoc.kivo.data.lessonsList
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LessonsScreen(onOpenCamera: () -> Unit) {
-
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFFFF0D7))
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp)
+fun LessonsScreen(onBack: () -> Unit, onOpenCamera: () -> Unit) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Lecciones") },
+                navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = "Volver") } },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            )
+        }
     ) {
-
-        items(lessonsList) { lesson ->
-            LessonCard(lesson, onOpenCamera)
+        LazyColumn(
+            modifier = Modifier.fillMaxSize().padding(it).padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            items(lessonsList) { lesson ->
+                LessonCard(lesson = lesson, onOpenCamera = onOpenCamera)
+            }
         }
     }
 }
 
 @Composable
 fun LessonCard(lesson: Lesson, onOpenCamera: () -> Unit) {
-
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.White
-        ),
-        elevation = CardDefaults.cardElevation(6.dp)
-    ) {
-
-        Column(modifier = Modifier.padding(22.dp)) {
-
-            // Nivel
+    Card(modifier = Modifier.fillMaxWidth(), elevation = CardDefaults.cardElevation(4.dp)) {
+        Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                lesson.level,
-                fontSize = 20.sp,
-                color = Color(0xFFE67E22),
-                fontWeight = FontWeight.Bold
+                text = lesson.level,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
             )
-
-            // Título de lección
             Text(
-                lesson.title,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = Color(0xFFCA6F1E)
+                text = lesson.title,
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
             )
-
-            Spacer(modifier = Modifier.height(14.dp))
-
-            // Imagen de la lección
+            Spacer(Modifier.height(12.dp))
             Image(
                 painter = painterResource(id = lesson.image),
                 contentDescription = lesson.title,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(190.dp)
-                    .clip(RoundedCornerShape(16.dp)),
+                modifier = Modifier.fillMaxWidth().height(180.dp).clip(MaterialTheme.shapes.medium),
                 contentScale = ContentScale.Crop
             )
-
-            Spacer(modifier = Modifier.height(14.dp))
-
-            // Descripción
-            Text(
-                lesson.description,
-                fontSize = 16.sp,
-                color = Color.Black
-            )
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            // Botón
+            Spacer(Modifier.height(12.dp))
+            Text(text = lesson.description, style = MaterialTheme.typography.bodyMedium)
+            Spacer(Modifier.height(16.dp))
             Button(
-                onClick = { onOpenCamera() },
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .height(45.dp),
-                shape = RoundedCornerShape(50.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFFFA726)
-                )
+                onClick = onOpenCamera,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
-                Text("Abrir Cámara", color = Color.White, fontSize = 16.sp)
+                Text("Abrir Cámara")
             }
         }
     }

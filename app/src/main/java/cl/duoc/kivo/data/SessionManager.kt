@@ -1,6 +1,8 @@
 package cl.duoc.kivo.data
 
 import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -12,7 +14,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 // Delegado top-level para DataStore (nombre del archivo de prefs)
-private val Context.dataStore by preferencesDataStore(name = "kivo_prefs")
+private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "kivo_prefs")
 
 @Singleton
 class SessionManager @Inject constructor(
@@ -58,8 +60,8 @@ class SessionManager @Inject constructor(
     // Limpia sesión (logout)
     suspend fun clearSession() {
         context.dataStore.edit { prefs ->
-            prefs[KEY_TOKEN] = ""
-            prefs[KEY_LOGGED] = false
+            prefs.remove(KEY_TOKEN)
+            prefs.remove(KEY_LOGGED)
             prefs.remove(KEY_EMAIL)
         }
     }

@@ -2,7 +2,9 @@ package cl.duoc.kivo.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -12,49 +14,62 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import cl.duoc.kivo.R
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     userName: String,
     email: String,
     onBack: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(20.dp)
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Perfil") },
+                navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = "Volver") } },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            )
+        }
     ) {
-
-        Image(
-            painter = painterResource(id = R.drawable.perfil),
-            contentDescription = "Profile picture",
+        Column(
             modifier = Modifier
-                .size(120.dp)
-                .align(Alignment.CenterHorizontally)
-                .clip(RoundedCornerShape(60.dp)),
-            contentScale = ContentScale.Crop
-        )
+                .fillMaxSize()
+                .padding(it)
+                .padding(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Spacer(modifier = Modifier.height(16.dp))
 
-        Spacer(modifier = Modifier.height(10.dp))
+            Image(
+                painter = painterResource(id = R.drawable.perfil),
+                contentDescription = "Profile picture",
+                modifier = Modifier
+                    .size(120.dp)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop
+            )
 
-        Text(userName, fontSize = 22.sp, fontWeight = FontWeight.Bold, modifier = Modifier.align(Alignment.CenterHorizontally))
-        Text(email, fontSize = 16.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
+            Spacer(modifier = Modifier.height(16.dp))
 
-        Spacer(modifier = Modifier.height(20.dp))
+            Text(userName, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+            Text(email, style = MaterialTheme.typography.bodyLarge)
 
-        Text("Información de la cuenta", fontWeight = FontWeight.Bold, fontSize = 18.sp)
-        Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
-        Text("Nombre: $userName")
-        Text("Correo: $email")
-        Text("Registrado en Kivo")
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Button(onClick = onBack) {
-            Text("Volver")
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(16.dp)){
+                    Text("Información de la cuenta", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Text("Nombre: $userName")
+                    Text("Correo: $email")
+                    Text("Registrado en Kivo")
+                }
+            }
         }
     }
 }
