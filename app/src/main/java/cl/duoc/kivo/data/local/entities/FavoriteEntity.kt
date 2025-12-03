@@ -7,5 +7,7 @@ import androidx.room.PrimaryKey
 data class FavoriteEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val word: String,
-    val description: String
+    val description: String,
+    val userEmail: String   // ← ¡Nuevo!
 )
+

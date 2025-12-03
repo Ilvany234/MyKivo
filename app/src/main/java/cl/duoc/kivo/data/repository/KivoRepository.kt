@@ -79,12 +79,23 @@ class KivoRepository @Inject constructor(
     }
 
     // --- FAVORITOS ---
-    suspend fun getAllFavorites(): List<FavoriteEntity> = dao.getAllFavorites()
+    suspend fun getAllFavorites(): List<FavoriteEntity> {
+        val email = sessionManager.emailFlow.first() ?: return emptyList()
+        return dao.getFavoritesByUser(email)
+    }
 
     suspend fun insertFavorite(word: String, description: String) {
-        val favorite = FavoriteEntity(word = word, description = description)
+        val email = sessionManager.emailFlow.first() ?: return
+
+        val favorite = FavoriteEntity(
+            word = word,
+            description = description,
+            userEmail = email
+        )
+
         dao.insertFavorite(favorite)
     }
+
 
     suspend fun getLoggedUser(): User? {
         val email = sessionManager.emailFlow.first() ?: return null

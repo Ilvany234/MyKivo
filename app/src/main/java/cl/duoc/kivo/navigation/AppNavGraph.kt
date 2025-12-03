@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import cl.duoc.kivo.ui.auth.LoginScreen
 import cl.duoc.kivo.ui.auth.RegisterScreen
+import cl.duoc.kivo.ui.screens.CameraScreen
 import cl.duoc.kivo.ui.screens.FavoritesScreen
 import cl.duoc.kivo.ui.screens.HomeScreen
 import cl.duoc.kivo.ui.screens.LessonsScreen
@@ -79,7 +80,17 @@ fun AppNavGraph() {
         composable(Screen.Lessons.route) {
             LessonsScreen(
                 onBack = { navController.navigateUp() },
-                onOpenCamera = { /* acción futura */ }
+
+                onOpenCamera = {
+                    navController.navigate(Screen.Camera.route)
+                }
+            )
+        }
+
+        // ----------- CAMERA -----------
+        composable(Screen.Camera.route) {
+            CameraScreen(
+                onBack = { navController.navigateUp() }
             )
         }
 

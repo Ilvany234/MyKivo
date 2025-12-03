@@ -28,6 +28,7 @@ interface KivoDao {
     @Insert
     suspend fun insertFavorite(fav: FavoriteEntity)
 
-    @Query("SELECT * FROM favorites")
-    suspend fun getAllFavorites(): List<FavoriteEntity>
+    @Query("SELECT * FROM favorites WHERE userEmail = :email")
+    suspend fun getFavoritesByUser(email: String): List<FavoriteEntity>
+
 }
