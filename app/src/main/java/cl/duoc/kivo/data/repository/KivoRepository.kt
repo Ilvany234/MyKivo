@@ -14,10 +14,10 @@ import javax.inject.Singleton
 @Singleton
 class KivoRepository @Inject constructor(
     private val dao: KivoDao,
-    private val sessionManager: SessionManager
+    val sessionManager: SessionManager
 ) {
 
-    // --- LÓGICA DE AUTENTICACIÓN ---
+    // --- AUTH ---
     suspend fun register(name: String, email: String, password: String, age: Int): Result<User> {
         delay(500)
         if (dao.getUserByEmail(email) != null) {
@@ -43,8 +43,13 @@ class KivoRepository @Inject constructor(
             userEntity == null -> Result.failure(Exception("Usuario no encontrado"))
             userEntity.password != password -> Result.failure(Exception("Contraseña incorrecta"))
             else -> {
-                val user = User(name = userEntity.name, email = userEntity.email, age = userEntity.age, password = userEntity.password)
-                sessionManager.saveSession(token = "fake_jwt_token_for_session", email = user.email)
+                val user = User(
+                    name = userEntity.name,
+                    email = userEntity.email,
+                    age = userEntity.age,
+                    password = userEntity.password
+                )
+                sessionManager.saveSession(token = "fake_jwt_token", email = user.email)
                 Result.success(user)
             }
         }
@@ -54,27 +59,38 @@ class KivoRepository @Inject constructor(
         sessionManager.clearSession()
     }
 
-    // --- LÓGICA DE RESEÑAS ---
-    suspend fun getAllReviews(): List<ReviewEntity> {
-        return dao.getAllReviews()
+    // --- PERFIL ---
+    suspend fun getLoggedEmail(): String? {
+        return sessionManager.emailFlow.first()
     }
 
+    suspend fun getUserByEmail(email: String): UserEntity? {
+        return dao.getUserByEmail(email)
+    }
+
+    // --- REVIEWS ---
+    suspend fun getAllReviews(): List<ReviewEntity> = dao.getAllReviews()
+
     suspend fun insertReview(text: String) {
-        val userEmail = sessionManager.emailFlow.first()
-        if (userEmail == null) return
-        val user = dao.getUserByEmail(userEmail)
-        if (user == null) return
+        val userEmail = sessionManager.emailFlow.first() ?: return
+        val user = dao.getUserByEmail(userEmail) ?: return
         val review = ReviewEntity(author = user.name, text = text)
         dao.insertReview(review)
     }
-    
-    // --- LÓGICA DE FAVORITOS ---
-    suspend fun getAllFavorites(): List<FavoriteEntity> {
-        return dao.getAllFavorites()
-    }
+
+    // --- FAVORITOS ---
+    suspend fun getAllFavorites(): List<FavoriteEntity> = dao.getAllFavorites()
 
     suspend fun insertFavorite(word: String, description: String) {
         val favorite = FavoriteEntity(word = word, description = description)
         dao.insertFavorite(favorite)
     }
+
+    suspend fun getLoggedUser(): User? {
+        val email = sessionManager.emailFlow.first() ?: return null
+        val user = dao.getUserByEmail(email) ?: return null
+        return User(name = user.name, email = user.email, age = user.age, password = user.password)
+    }
+
 }
+

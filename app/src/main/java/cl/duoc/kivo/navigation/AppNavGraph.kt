@@ -17,25 +17,47 @@ import cl.duoc.kivo.ui.viewmodel.AuthViewModel
 
 @Composable
 fun AppNavGraph() {
+
     val navController = rememberNavController()
     val authViewModel: AuthViewModel = hiltViewModel()
 
-    NavHost(navController = navController, startDestination = Screen.Splash.route) {
-        composable(Screen.Splash.route) { SplashScreen(navController) }
+    NavHost(
+        navController = navController,
+        startDestination = Screen.Splash.route
+    ) {
+
+        // ----------- SPLASH -----------
+        composable(Screen.Splash.route) {
+            SplashScreen(navController)
+        }
+
+        // ----------- LOGIN -----------
         composable(Screen.Login.route) {
             LoginScreen(
-                onLoginSuccess = { navController.navigate(Screen.Home.route) { popUpTo(Screen.Login.route) { inclusive = true } } },
-                onRegisterClick = { navController.navigate(Screen.Register.route) },
-                vm = authViewModel
+                vm = authViewModel,
+                onLoginSuccess = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Login.route) { inclusive = true }
+                    }
+                },
+                onRegisterClick = { navController.navigate(Screen.Register.route) }
             )
         }
+
+        // ----------- REGISTER -----------
         composable(Screen.Register.route) {
             RegisterScreen(
-                onRegistered = { navController.navigate(Screen.Login.route) { popUpTo(Screen.Register.route) { inclusive = true } } },
-                onBack = { navController.navigateUp() },
-                vm = authViewModel
+                vm = authViewModel,
+                onRegistered = {
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(Screen.Register.route) { inclusive = true }
+                    }
+                },
+                onBack = { navController.navigateUp() }
             )
         }
+
+        // ----------- HOME -----------
         composable(Screen.Home.route) {
             HomeScreen(
                 onOpenLessons = { navController.navigate(Screen.Lessons.route) },
@@ -45,20 +67,38 @@ fun AppNavGraph() {
                 onLogout = {
                     authViewModel.logout()
                     navController.navigate(Screen.Login.route) {
-                        // Limpia toda la pila de navegación
-                        popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                        popUpTo(navController.graph.startDestinationId) {
+                            inclusive = true
+                        }
                     }
                 }
             )
         }
+
+        // ----------- LESSONS -----------
         composable(Screen.Lessons.route) {
             LessonsScreen(
-                onBack = { navController.navigateUp() }, // Parámetro añadido
-                onOpenCamera = { /* Lógica para abrir cámara */ }
+                onBack = { navController.navigateUp() },
+                onOpenCamera = { /* acción futura */ }
             )
         }
-        composable(Screen.Profile.route) { ProfileScreen(userName = "Usuario de Prueba", email = "test@example.com", onBack = { navController.navigateUp() }) }
-        composable(Screen.Reviews.route) { ReviewsScreen(onBack = { navController.navigateUp() }) }
-        composable(Screen.Favorites.route) { FavoritesScreen(onBack = { navController.navigateUp() }) }
+
+        // ----------- PROFILE -----------
+        composable(Screen.Profile.route) {
+            ProfileScreen(
+                vm = authViewModel,
+                onBack = { navController.navigateUp() }
+            )
+        }
+
+        // ----------- REVIEWS -----------
+        composable(Screen.Reviews.route) {
+            ReviewsScreen(onBack = { navController.navigateUp() })
+        }
+
+        // ----------- FAVORITES -----------
+        composable(Screen.Favorites.route) {
+            FavoritesScreen(onBack = { navController.navigateUp() })
+        }
     }
 }
