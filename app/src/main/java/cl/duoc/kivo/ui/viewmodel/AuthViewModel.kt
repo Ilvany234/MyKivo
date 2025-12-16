@@ -3,10 +3,6 @@ package cl.duoc.kivo.ui.viewmodel
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-<<<<<<< HEAD
-=======
-import cl.duoc.kivo.data.User
->>>>>>> 868d0746111ac68b45e7cb79d6ceac74d756bfd6
 import cl.duoc.kivo.data.repository.KivoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,13 +11,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-<<<<<<< HEAD
 class AuthViewModel @Inject constructor(private val repo: KivoRepository) : ViewModel() {
-=======
-class AuthViewModel @Inject constructor(
-    private val repo: KivoRepository
-) : ViewModel() {
->>>>>>> 868d0746111ac68b45e7cb79d6ceac74d756bfd6
 
     data class CampoEstado(val valor: String = "", val tocado: Boolean = false, val error: String = "")
 
@@ -32,16 +22,6 @@ class AuthViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow<UiState>(UiState.Idle)
     val uiState: StateFlow<UiState> = _uiState
-
-    // ⬅️ Nuevo: Para mostrar los datos del usuario en ProfileScreen
-    var currentUser = mutableStateOf<User?>(null)
-
-    fun loadUserFromSession() {
-        viewModelScope.launch {
-            val user = repo.getLoggedUser()
-            currentUser.value = user
-        }
-    }
 
     fun onNombreChange(valor: String) {
         nombre.value = nombre.value.copy(valor = valor, tocado = true)
@@ -72,7 +52,6 @@ class AuthViewModel @Inject constructor(
         correo.value = correo.value.copy(error = if (correo.value.tocado) errorMsg else "")
     }
 
-    // --- ¡SOLUCIÓN! Se añade validación de contraseña robusta ---
     private fun validarClave() {
         val clave = clave.value.valor
         val errorMsg = when {
@@ -97,7 +76,7 @@ class AuthViewModel @Inject constructor(
 
     fun register() {
         if (!verificarRegistro()) {
-            _uiState.value = UiState.Error("Corrige los errores y acepta los términos")
+            _uiState.value = UiState.Error("Por favor, corrige los errores y acepta los términos")
             return
         }
 
@@ -108,12 +87,8 @@ class AuthViewModel @Inject constructor(
                 email = correo.value.valor,
                 password = clave.value.valor
             )
-            result.onSuccess {
-                _uiState.value = UiState.Success("¡Registro exitoso!")
-            }
-            result.onFailure { error ->
-                _uiState.value = UiState.Error(error.message ?: "Error desconocido")
-            }
+            result.onSuccess { _uiState.value = UiState.Success("¡Registro exitoso!") }
+            result.onFailure { error -> _uiState.value = UiState.Error(error.message ?: "Error desconocido") }
         }
     }
 
@@ -121,20 +96,14 @@ class AuthViewModel @Inject constructor(
         _uiState.value = UiState.Loading
         viewModelScope.launch {
             val result = repo.login(correo.value.valor, clave.value.valor)
-            result.onSuccess { user ->
-                currentUser.value = user
-                _uiState.value = UiState.Success("¡Inicio de sesión exitoso!")
-            }
-            result.onFailure { error ->
-                _uiState.value = UiState.Error(error.message ?: "Error desconocido")
-            }
+            result.onSuccess { _uiState.value = UiState.Success("¡Inicio de sesión exitoso!") }
+            result.onFailure { error -> _uiState.value = UiState.Error(error.message ?: "Error desconocido") }
         }
     }
 
     fun logout() {
         viewModelScope.launch {
             repo.logout()
-            currentUser.value = null
         }
     }
 

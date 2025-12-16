@@ -7,7 +7,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import cl.duoc.kivo.ui.auth.LoginScreen
 import cl.duoc.kivo.ui.auth.RegisterScreen
-import cl.duoc.kivo.ui.screens.CameraScreen
 import cl.duoc.kivo.ui.screens.FavoritesScreen
 import cl.duoc.kivo.ui.screens.HomeScreen
 import cl.duoc.kivo.ui.screens.LessonsScreen
@@ -18,47 +17,25 @@ import cl.duoc.kivo.ui.viewmodel.AuthViewModel
 
 @Composable
 fun AppNavGraph() {
-
     val navController = rememberNavController()
     val authViewModel: AuthViewModel = hiltViewModel()
 
-    NavHost(
-        navController = navController,
-        startDestination = Screen.Splash.route
-    ) {
-
-        // ----------- SPLASH -----------
-        composable(Screen.Splash.route) {
-            SplashScreen(navController)
-        }
-
-        // ----------- LOGIN -----------
+    NavHost(navController = navController, startDestination = Screen.Splash.route) {
+        composable(Screen.Splash.route) { SplashScreen(navController) }
         composable(Screen.Login.route) {
             LoginScreen(
-                vm = authViewModel,
-                onLoginSuccess = {
-                    navController.navigate(Screen.Home.route) {
-                        popUpTo(Screen.Login.route) { inclusive = true }
-                    }
-                },
-                onRegisterClick = { navController.navigate(Screen.Register.route) }
+                onLoginSuccess = { navController.navigate(Screen.Home.route) { popUpTo(Screen.Login.route) { inclusive = true } } },
+                onRegisterClick = { navController.navigate(Screen.Register.route) },
+                vm = authViewModel
             )
         }
-
-        // ----------- REGISTER -----------
         composable(Screen.Register.route) {
             RegisterScreen(
-                vm = authViewModel,
-                onRegistered = {
-                    navController.navigate(Screen.Login.route) {
-                        popUpTo(Screen.Register.route) { inclusive = true }
-                    }
-                },
-                onBack = { navController.navigateUp() }
+                onRegistered = { navController.navigate(Screen.Login.route) { popUpTo(Screen.Register.route) { inclusive = true } } },
+                onBack = { navController.navigateUp() },
+                vm = authViewModel
             )
         }
-
-        // ----------- HOME -----------
         composable(Screen.Home.route) {
             HomeScreen(
                 onOpenLessons = { navController.navigate(Screen.Lessons.route) },
@@ -68,54 +45,19 @@ fun AppNavGraph() {
                 onLogout = {
                     authViewModel.logout()
                     navController.navigate(Screen.Login.route) {
-                        popUpTo(navController.graph.startDestinationId) {
-                            inclusive = true
-                        }
+                        popUpTo(navController.graph.startDestinationId) { inclusive = true }
                     }
                 }
             )
         }
-
-        // ----------- LESSONS -----------
         composable(Screen.Lessons.route) {
-<<<<<<< HEAD
-            // --- ¡SOLUCIÓN! ---
-            // Se elimina el parámetro onOpenCamera que ya no existe
             LessonsScreen(onBack = { navController.navigateUp() })
-=======
-            LessonsScreen(
-                onBack = { navController.navigateUp() },
-
-                onOpenCamera = {
-                    navController.navigate(Screen.Camera.route)
-                }
-            )
->>>>>>> 868d0746111ac68b45e7cb79d6ceac74d756bfd6
         }
-
-        // ----------- CAMERA -----------
-        composable(Screen.Camera.route) {
-            CameraScreen(
-                onBack = { navController.navigateUp() }
-            )
-        }
-
-        // ----------- PROFILE -----------
         composable(Screen.Profile.route) {
-            ProfileScreen(
-                vm = authViewModel,
-                onBack = { navController.navigateUp() }
-            )
+            // Pasamos datos de ejemplo al perfil. En un futuro, estos vendrían del ViewModel.
+            ProfileScreen(userName = "Usuario Kivo", email = "test@kivo.com", onBack = { navController.navigateUp() })
         }
-
-        // ----------- REVIEWS -----------
-        composable(Screen.Reviews.route) {
-            ReviewsScreen(onBack = { navController.navigateUp() })
-        }
-
-        // ----------- FAVORITES -----------
-        composable(Screen.Favorites.route) {
-            FavoritesScreen(onBack = { navController.navigateUp() })
-        }
+        composable(Screen.Reviews.route) { ReviewsScreen(onBack = { navController.navigateUp() }) }
+        composable(Screen.Favorites.route) { FavoritesScreen(onBack = { navController.navigateUp() }) }
     }
 }
