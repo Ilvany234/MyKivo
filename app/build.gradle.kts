@@ -30,6 +30,9 @@ android {
 }
 
 dependencies {
+    // Accompanist Permissions
+    implementation("com.google.accompanist:accompanist-permissions:0.32.0")
+
     // DataStore
     implementation("androidx.datastore:datastore-preferences:1.1.1")
 

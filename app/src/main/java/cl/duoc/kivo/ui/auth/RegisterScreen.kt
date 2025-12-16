@@ -47,7 +47,7 @@ fun RegisterScreen(onRegistered: () -> Unit, onBack: () -> Unit, vm: AuthViewMod
             RegisterTextField(label = "Nombre", state = vm.nombre.value, onValueChange = vm::onNombreChange)
             RegisterTextField(label = "Correo", state = vm.correo.value, onValueChange = vm::onCorreoChange)
             RegisterTextField(label = "Contraseña", state = vm.clave.value, onValueChange = vm::onClaveChange, isPassword = true)
-            RegisterTextField(label = "Edad", state = vm.edad.value, onValueChange = vm::onEdadChange)
+            // RegisterTextField(label = "Edad", state = vm.edad.value, onValueChange = vm::onEdadChange) // --- CAMPO ELIMINADO ---
 
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                 Checkbox(checked = vm.terminos.value, onCheckedChange = { vm.onTerminosChange(it) }) // Colores heredados del tema
@@ -55,7 +55,8 @@ fun RegisterScreen(onRegistered: () -> Unit, onBack: () -> Unit, vm: AuthViewMod
             }
             Spacer(Modifier.height(16.dp))
 
-            val isFormValid = vm.nombre.value.error.isEmpty() && vm.correo.value.error.isEmpty() && vm.clave.value.error.isEmpty() && vm.edad.value.error.isEmpty() && vm.terminos.value
+            // --- ¡SOLUCIÓN! Se elimina la comprobación de la edad ---
+            val isFormValid = vm.nombre.value.error.isEmpty() && vm.correo.value.error.isEmpty() && vm.clave.value.error.isEmpty() && vm.terminos.value
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                 if (uiState is UiState.Loading) {
                     CircularProgressIndicator()

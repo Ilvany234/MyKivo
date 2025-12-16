@@ -52,10 +52,9 @@ fun AppNavGraph() {
             )
         }
         composable(Screen.Lessons.route) {
-            LessonsScreen(
-                onBack = { navController.navigateUp() }, // Parámetro añadido
-                onOpenCamera = { /* Lógica para abrir cámara */ }
-            )
+            // --- ¡SOLUCIÓN! ---
+            // Se elimina el parámetro onOpenCamera que ya no existe
+            LessonsScreen(onBack = { navController.navigateUp() })
         }
         composable(Screen.Profile.route) { ProfileScreen(userName = "Usuario de Prueba", email = "test@example.com", onBack = { navController.navigateUp() }) }
         composable(Screen.Reviews.route) { ReviewsScreen(onBack = { navController.navigateUp() }) }

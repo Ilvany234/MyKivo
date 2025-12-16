@@ -15,7 +15,6 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
 
-    // Provee la instancia de la base de datos Room
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): KivoDatabase {
@@ -23,10 +22,13 @@ object DatabaseModule {
             context,
             KivoDatabase::class.java,
             "kivo_database"
-        ).build()
+        )
+        // --- ¡SOLUCIÓN! ---
+        // Permite a Room recrear la base de datos si las migraciones fallan
+        .fallbackToDestructiveMigration()
+        .build()
     }
 
-    // Provee la instancia del DAO a partir de la base de datos
     @Provides
     @Singleton
     fun provideDao(database: KivoDatabase): KivoDao {
